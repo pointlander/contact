@@ -5,6 +5,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"math"
@@ -17,8 +18,14 @@ import (
 	"gonum.org/v1/plot/vg"
 )
 
+var (
+	FlagBits = flag.String("bits", "data.bits", "the bits file")
+)
+
 func main() {
-	data, _ := ioutil.ReadFile("data.bits")
+	flag.Parse()
+
+	data, _ := ioutil.ReadFile(*FlagBits)
 	lines := strings.Split(string(data), "\n")
 
 	err := writer.WriteSMF("notes.mid", 1, func(wr *writer.SMF) error {
