@@ -141,6 +141,8 @@ func Split() {
 	qsim.RY(-2*phi, q1)
 	qsim.H(q1)
 
+	qsim.CNOT(q1, q0)
+
 	for _, s := range qsim.State() {
 		fmt.Println(s)
 	}
