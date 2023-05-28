@@ -43,8 +43,7 @@ qc.h(qr[1])
 
 qc.cx(qr[1], qr[0])
 
-qc.measure(qr[0],cr[0])
-qc.measure(qr[1],cr[1])
+qc.measure(qr,cr)
 
 qc.draw()
 
