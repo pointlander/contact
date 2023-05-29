@@ -1,2 +1,2 @@
 qiskit
-qiskit-ibmq-provider
+qiskit_ibm_provider

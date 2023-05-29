@@ -12,27 +12,22 @@ from qiskit import QuantumCircuit, QuantumRegister, transpile, execute
 from qiskit.quantum_info import random_statevector
 from qiskit.quantum_info import partial_trace, entropy
 import qiskit.quantum_info as qi
+import sys
+from qiskit_ibm_provider import IBMProvider
 
 qr = QuantumRegister(2)
 cr = ClassicalRegister(2)
-
 qc = QuantumCircuit(qr, cr)
 
-# Define the parameters
 k=1
 h=1.5
-
-#Prepare the ground state
 alpha=-np.arcsin((1/np.sqrt(2))*(np.sqrt(1+h/np.sqrt(h**2+k**2))))
+def sin(k,h):
+    return (h*k)/np.sqrt((h**2+2*k**2)**2+(h*k)**2)
+phi=0.5*np.arcsin(sin(k,h))
 
 qc.ry(2*alpha,qr[0])
 qc.x(qr[0])
-
-def sin(k,h):
-    return (h*k)/np.sqrt((h**2+2*k**2)**2+(h*k)**2)
-
-phi=0.5*np.arcsin(sin(k,h))
-
 qc.ry(2*phi,qr[0])
 qc.h(qr[0])
 
@@ -41,37 +36,41 @@ qc.x(qr[1])
 qc.ry(-2*phi,qr[1])
 qc.h(qr[1])
 
-qc.cx(qr[1], qr[0])
+qc.cnot(qr[1], qr[0])
 
 qc.measure(qr,cr)
 
 qc.draw()
 
-# Enable your account on Qiskit, replace 'My_API_Token' with your newly generated token
-IBMQ.save_account(key.KEY, overwrite=True)
-IBMQ.load_account()
-# After loading credentials we query the backends
-# IBMQ.backends()
+if len(sys.argv) > 1 and sys.argv[1] == 'sim':
+    simulator = Aer.get_backend('qasm_simulator')
+    n_shots=100000
+    qc_meas = QuantumCircuit(qr,cr)
+    qc_meas.measure(qr,cr)
+    qc_total = qc.compose(qc_meas)  
+    job = execute(qc_total, backend=simulator, shots=n_shots, memory=True)
 
-#IBMQ.load_account()
-provider = IBMQ.get_provider(hub='ibm-q')
+    results = job.result()
+    lines = results.get_memory(qc_total)
+    with open('data.bits', 'w') as f:
+        for line in lines:
+            f.write(f"{line}\n")
+    quit()
 
-from qiskit.providers.ibmq import least_busy
+IBMProvider.save_account(key.KEY, overwrite=True)
+provider = IBMProvider(instance="ibm-q/open/main")
+#print(provider.backends())
+backend = provider.get_backend("ibmq_quito")
 
-small_devices = provider.backends(filters=lambda x: x.configuration().n_qubits >= 0
-                                   and not x.configuration().simulator)
-backend=least_busy(small_devices)
-
-print("Name", backend.name())
-print("Status", backend.status())
-print("Limit",backend.job_limit())
-print("Remaining Jobs",backend.remaining_jobs_count())
-print("Number of Active Jobs",backend.active_jobs())
+#print("Name", backend.name())
+#print("Status", backend.status())
+#print("Limit",backend.job_limit())
+#print("Remaining Jobs",backend.remaining_jobs_count())
+#print("Number of Active Jobs",backend.active_jobs())
 
 n_shots=2000
-qc_total = transpile(qc, backend)
-
-job = execute(qc_total, backend=backend, shots=n_shots, memory=True)
+qc_total = transpile(qc, backend=backend)
+job = backend.run(qc_total, shots=n_shots, memory=True)
 job.status()
 
 results = job.result()
