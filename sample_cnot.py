@@ -36,7 +36,7 @@ qc.x(qr[1])
 qc.ry(-2*phi,qr[1])
 qc.h(qr[1])
 
-qc.cnot(qr[1], qr[0])
+qc.cnot(qr[0], qr[1])
 
 qc.measure(qr,cr)
 
