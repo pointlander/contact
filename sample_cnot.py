@@ -15,6 +15,14 @@ import qiskit.quantum_info as qi
 import sys
 from qiskit_ibm_provider import IBMProvider
 
+sim = False
+cnot = False
+for option in sys.argv:
+    if option == "-sim":
+        sim = True
+    if option == "-cnot":
+        cnot = True
+
 qr = QuantumRegister(2)
 cr = ClassicalRegister(2)
 qc = QuantumCircuit(qr, cr)
@@ -36,13 +44,14 @@ qc.x(qr[1])
 qc.ry(-2*phi,qr[1])
 qc.h(qr[1])
 
-qc.cnot(qr[0], qr[1])
+if cnot:
+    qc.cnot(qr[0], qr[1])
 
 qc.measure(qr,cr)
 
 qc.draw()
 
-if len(sys.argv) > 1 and sys.argv[1] == 'sim':
+if sim:
     simulator = Aer.get_backend('qasm_simulator')
     n_shots=100000
     qc_meas = QuantumCircuit(qr,cr)
