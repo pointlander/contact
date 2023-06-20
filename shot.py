@@ -77,7 +77,7 @@ backend = provider.get_backend("ibmq_quito")
 #print("Remaining Jobs",backend.remaining_jobs_count())
 #print("Number of Active Jobs",backend.active_jobs())
 
-n_shots=2000
+n_shots=20000
 qc_total = transpile(qc, backend=backend)
 job = backend.run(qc_total, shots=n_shots, memory=True)
 job.status()
