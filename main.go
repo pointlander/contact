@@ -5,8 +5,11 @@
 package main
 
 import (
+	"bytes"
+	"compress/gzip"
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"math"
 	"math/cmplx"
@@ -162,6 +165,18 @@ func main() {
 	}
 
 	data, _ := ioutil.ReadFile(*FlagBits)
+	if strings.HasSuffix(*FlagBits, ".gz") {
+		reader, err := gzip.NewReader(bytes.NewReader(data))
+		if err != nil {
+			panic(err)
+		}
+		output := bytes.Buffer{}
+		_, err = io.Copy(&output, reader)
+		if err != nil {
+			panic(err)
+		}
+		data = output.Bytes()
+	}
 	lines := strings.Split(string(data), "\n")
 
 	err := writer.WriteSMF("notes.mid", 1, func(wr *writer.SMF) error {
