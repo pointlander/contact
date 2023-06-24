@@ -76,7 +76,8 @@ if printBackends:
         status = b.status()
         print(b.name + ' ' + str(status.operational) + ' ' + str(status.pending_jobs))
     quit()
-backend = provider.get_backend("ibmq_quito")
+#backend = provider.get_backend("ibmq_quito")
+backend = provider.get_backend("ibmq_jakarta")
 
 #print("Name", backend.name())
 #print("Status", backend.status())
