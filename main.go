@@ -27,6 +27,8 @@ import (
 var (
 	// FlagSim simulation mode
 	FlagSim = flag.Bool("sim", false, "simulation mode")
+	// FlagCNOT cnot mode
+	FlagCNOT = flag.Bool("cnot", false, "cnot mode")
 	// FlagBits selects the bit file to use
 	FlagBits = flag.String("bits", "data.bits", "the bits file")
 )
@@ -144,7 +146,9 @@ func Split() {
 	qsim.RY(-2*phi, q1)
 	qsim.H(q1)
 
-	qsim.CNOT(q1, q0)
+	if *FlagCNOT {
+		qsim.CNOT(q1, q0)
+	}
 
 	for _, s := range qsim.State() {
 		fmt.Println(s)
