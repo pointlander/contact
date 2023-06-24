@@ -17,11 +17,14 @@ from qiskit_ibm_provider import IBMProvider
 
 sim = False
 cnot = False
+printBackends = False
 for option in sys.argv:
     if option == "-sim":
         sim = True
     if option == "-cnot":
         cnot = True
+    if option == "-print":
+        printBackends = True
 
 qr = QuantumRegister(2)
 cr = ClassicalRegister(2)
@@ -68,7 +71,11 @@ if sim:
 
 IBMProvider.save_account(key.KEY, overwrite=True)
 provider = IBMProvider(instance="ibm-q/open/main")
-#print(provider.backends())
+if printBackends:
+    for b in provider.backends():
+        status = b.status()
+        print(b.name + ' ' + str(status.operational) + ' ' + str(status.pending_jobs))
+    quit()
 backend = provider.get_backend("ibmq_quito")
 
 #print("Name", backend.name())
