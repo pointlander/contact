@@ -37,7 +37,7 @@ To produce data sets with a quantum computer place your IBM key in key.py and us
 python3 shot.py
 ```
 
-Results will be place in `data.bits`.
+Results will be placed in `data.bits`.
 
 ## simulation
 ```sh
