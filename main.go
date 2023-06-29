@@ -183,11 +183,24 @@ func main() {
 	}
 	lines := strings.Split(string(data), "\n")
 
+	xorTrueCount, xorFalseCount := 0, 0
 	err := writer.WriteSMF("notes.mid", 1, func(wr *writer.SMF) error {
 		for _, line := range lines {
 			bits := []byte(line)
 			if len(bits) != 2 {
 				continue
+			}
+			a, b := 0, 0
+			if bits[0] == '1' {
+				a = 1
+			}
+			if bits[1] == '1' {
+				b = 1
+			}
+			if a^b != 0 {
+				xorTrueCount++
+			} else {
+				xorFalseCount++
 			}
 			wr.SetChannel(0)
 			if bits[0] == '1' {
@@ -419,6 +432,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println(float64(xorTrueCount)/float64(xorTrueCount+xorFalseCount), float64(xorFalseCount)/float64(xorTrueCount+xorFalseCount))
 	fmt.Println("total")
 	for key, value := range h {
 		fmt.Printf("%d %f\n", key, value)
